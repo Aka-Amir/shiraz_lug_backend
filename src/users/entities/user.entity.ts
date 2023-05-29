@@ -4,7 +4,7 @@ import { MongoDocumentManager } from '../../@utils';
 import { UsersGender } from '../../enums/users-gender.enum';
 
 @Schema()
-class User {
+export class User {
   @Prop({
     type: String,
     required: true,

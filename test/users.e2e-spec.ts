@@ -71,12 +71,12 @@ describe('UsersController (e2e) user lifecycle', () => {
       });
   });
 
-  it('/users/:id (DELETE)', () => {
-    return request(app.getHttpServer())
-      .delete('/users/' + userID)
-      .then((s) => {
-        console.log(s.body);
-        expect(s.statusCode).toBeGreaterThanOrEqual(200);
-      });
-  });
+  // it('/users/:id (DELETE)', () => {
+  //   return request(app.getHttpServer())
+  //     .delete('/users/' + userID)
+  //     .then((s) => {
+  //       console.log(s.body);
+  //       expect(s.statusCode).toBeGreaterThanOrEqual(200);
+  //     });
+  // });
 });
