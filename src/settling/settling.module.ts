@@ -10,11 +10,11 @@ import { HotelsService } from './hotels.service';
     MongooseModule.forFeature([
       {
         name: Settling.SettlingDocumentManager.collectionName,
-        schema: Settling.Settling,
+        schema: Settling.SettlingDocumentManager.createModel(),
       },
       {
         name: Hotels.HotelsDocumentManager.collectionName,
-        schema: Hotels.Hotels,
+        schema: Hotels.HotelsDocumentManager.createModel(),
       },
     ]),
   ],

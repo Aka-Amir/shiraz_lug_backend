@@ -1,5 +1,5 @@
 import { IsNotEmpty, Min, IsNumber } from 'class-validator';
-export class CreateHotleDto {
+export class CreateHotelDto {
   @IsNotEmpty({
     message: 'hotelName_is_empty',
   })

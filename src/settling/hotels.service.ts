@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateHotleDto } from './dto/create-hotels.dto';
-import { UpdateHotelDto } from './dto/update-hotles.dto';
+import { CreateHotelDto } from './dto/create-hotels.dto';
+import { UpdateHotelDto } from './dto/update-hotels.dto';
 import { Hotels } from './entities';
 import { from } from 'rxjs';
 
@@ -13,7 +13,7 @@ export class HotelsService {
     private hotelsModel: Model<Hotels.HotelsDocument>,
   ) {}
 
-  create(dto: CreateHotleDto) {
+  create(dto: CreateHotelDto) {
     const hotelModel = new this.hotelsModel({
       hotelName: dto.hotelName,
       address: dto.address,
@@ -24,7 +24,13 @@ export class HotelsService {
   }
 
   findAll() {
-    return from(this.hotelsModel.find({}, { __v: 0 }).exec());
+    return from(
+      (async () => {
+        const a = await this.hotelsModel.find({}, { __v: 0 }).exec();
+        console.log(a);
+        return a;
+      })(),
+    );
   }
 
   findOne(id: string) {

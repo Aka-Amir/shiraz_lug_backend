@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateSettlingDto } from './dto/create-settling.dto';
 import { UpdateSettlingDto } from './dto/update-settling.dto';
 import { Settling } from './entities';
@@ -15,8 +15,8 @@ export class SettlingService {
 
   create(createSettlingDto: CreateSettlingDto) {
     const model = new this.settlingModel({
-      user: createSettlingDto.userID,
-      hotel: createSettlingDto.hotelID,
+      user: new Types.ObjectId(createSettlingDto.userID),
+      hotel: new Types.ObjectId(createSettlingDto.hotelID),
       days: createSettlingDto.days,
     });
     return from(model.save());
@@ -27,7 +27,13 @@ export class SettlingService {
   }
 
   findOne(id: string) {
-    return from(this.settlingModel.findOne({ _id: id }, { __v: 0 }).exec());
+    return from(
+      this.settlingModel
+        .findOne({ _id: id }, { __v: 0 })
+        .populate('user', { __v: 0 })
+        .populate('hotel', { __v: 0 })
+        .exec(),
+    );
   }
 
   update(id: string, updateSettlingDto: UpdateSettlingDto) {

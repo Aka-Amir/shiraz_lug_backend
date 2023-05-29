@@ -1,5 +1,5 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as TypeSchema } from 'mongoose';
 import { MongoDocumentManager } from '../../@utils';
 import { DocumentManager, User } from '../../users/entities/user.entity';
 import { Hotels, HotelsDocumentManager } from './hotels.entity';
@@ -8,6 +8,7 @@ import { Hotels, HotelsDocumentManager } from './hotels.entity';
 export class Settling {
   @Prop({
     ref: DocumentManager.collectionName,
+    type: TypeSchema.Types.ObjectId,
     required: true,
   })
   user: User;
@@ -15,6 +16,7 @@ export class Settling {
   @Prop({
     ref: HotelsDocumentManager.collectionName,
     required: true,
+    type: TypeSchema.Types.ObjectId,
   })
   hotel: Hotels;
 
