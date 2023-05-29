@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateSettlingDto } from './dto/create-settling.dto';
 import { UpdateSettlingDto } from './dto/update-settling.dto';
+import { Settling } from './entities';
+import { from } from 'rxjs';
 
 @Injectable()
 export class SettlingService {
+  constructor(
+    @InjectModel(Settling.SettlingDocumentManager.collectionName)
+    private settlingModel: Model<Settling.SettlingDocument>,
+  ) {}
+
   create(createSettlingDto: CreateSettlingDto) {
-    return 'This action adds a new settling';
+    const model = new this.settlingModel({
+      user: createSettlingDto.userID,
+      hotel: createSettlingDto.hotelID,
+      days: createSettlingDto.days,
+    });
+    return from(model.save());
   }
 
   findAll() {
-    return `This action returns all settling`;
+    return from(this.settlingModel.find({}, { __v: 0 }).exec());
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} settling`;
+  findOne(id: string) {
+    return from(this.settlingModel.findOne({ _id: id }, { __v: 0 }).exec());
   }
 
-  update(id: number, updateSettlingDto: UpdateSettlingDto) {
-    return `This action updates a #${id} settling`;
+  update(id: string, updateSettlingDto: UpdateSettlingDto) {
+    return from(
+      this.settlingModel
+        .updateOne(
+          { _id: id },
+          {
+            ...JSON.parse(JSON.stringify(updateSettlingDto)),
+          },
+        )
+        .exec(),
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} settling`;
+  remove(id: string) {
+    return from(this.settlingModel.deleteOne({ _id: id }).exec());
   }
 }

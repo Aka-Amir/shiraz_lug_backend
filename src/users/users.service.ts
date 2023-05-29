@@ -37,8 +37,11 @@ export class UsersService {
     return from(
       this.model
         .updateOne(
-          { _id: id },
-          { ...JSON.parse(JSON.stringify(updateUserDto)) },
+          { _id: id,
+          $set: {
+            ...JSON.parse(JSON.stringify(updateUserDto))
+          } },
+          {  },
         )
         .exec(),
     );

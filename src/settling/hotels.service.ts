@@ -1,0 +1,56 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateHotleDto } from './dto/create-hotels.dto';
+import { UpdateHotelDto } from './dto/update-hotles.dto';
+import { Hotels } from './entities';
+import { from } from 'rxjs';
+
+@Injectable()
+export class HotelsService {
+  constructor(
+    @InjectModel(Hotels.HotelsDocumentManager.collectionName)
+    private hotelsModel: Model<Hotels.HotelsDocument>,
+  ) {}
+
+  create(dto: CreateHotleDto) {
+    const hotelModel = new this.hotelsModel({
+      hotelName: dto.hotelName,
+      address: dto.address,
+      contactNumber: dto.contactNumber,
+      perDayPrice: dto.perDayPrice,
+    });
+    return from(hotelModel.save());
+  }
+
+  findAll() {
+    return from(this.hotelsModel.find({}, { __v: 0 }).exec());
+  }
+
+  findOne(id: string) {
+    return from(this.hotelsModel.findOne({ _id: id }, { __v: 0 }).exec());
+  }
+
+  update(id: string, updateDto: UpdateHotelDto) {
+    return from(
+      this.hotelsModel
+        .updateOne(
+          { _id: id },
+          {
+            ...JSON.parse(JSON.stringify(updateDto)),
+          },
+        )
+        .exec(),
+    );
+  }
+
+  remove(id: string) {
+    return from(
+      this.hotelsModel
+        .deleteOne({
+          _id: id,
+        })
+        .exec(),
+    );
+  }
+}
