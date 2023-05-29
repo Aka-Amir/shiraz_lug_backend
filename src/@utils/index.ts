@@ -1,0 +1,2 @@
+export { MongoDocumentManager } from './MongoDocumentManager';
+
