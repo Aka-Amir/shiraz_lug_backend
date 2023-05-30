@@ -1,7 +1,8 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as TypeSchema } from 'mongoose';
 import { MongoDocumentManager } from '../../@utils';
 import { UsersGender } from '../../enums/users-gender.enum';
+import { Food, FoodDocumentManager } from '../../foods/entities/food.entity';
 
 @Schema()
 export class User {
@@ -40,6 +41,12 @@ export class User {
     required: true,
   })
   city: string;
+
+  @Prop({
+    ref: FoodDocumentManager.collectionName,
+    type: TypeSchema.Types.ObjectId
+  })
+  orderedFood: Food
 }
 
 
