@@ -40,6 +40,25 @@ export class User {
     required: true,
   })
   city: string;
+
+  @Prop({
+    ref: FoodDocumentManager.collectionName,
+    type: TypeSchema.Types.ObjectId
+  })
+  orderedFood: Food;
+
+  @Prop({
+    type: Boolean,
+    default: false
+  })
+  needTaxi: boolean;
+
+  @Prop({
+    type: String,
+    default: "full"
+  })
+  presenceTime: string;
+
 }
 
 
