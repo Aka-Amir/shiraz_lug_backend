@@ -32,4 +32,6 @@ export class CreateUserDto {
     })
     city: string;
 
+    needTaxi?: boolean;
+    presenceTime?: string;
 }

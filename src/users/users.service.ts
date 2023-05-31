@@ -21,7 +21,9 @@ export class UsersService {
       gender: createUserDto.gender,
       phoneNumber: createUserDto.phoneNumber,
       city: createUserDto.city,
-      orderedFood: null
+      orderedFood: null,
+      needTaxi: createUserDto.needTaxi || false,
+      presenceTime: createUserDto.presenceTime || "full"
     });
     return from(user.save());
   }
