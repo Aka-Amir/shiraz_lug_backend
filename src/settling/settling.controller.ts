@@ -1,19 +1,19 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  Put,
+  Get,
+  Param,
+  Post,
+  Put
 } from '@nestjs/common';
-import { SettlingService } from './settling.service';
+import { map } from 'rxjs';
+import { CreateHotelDto } from './dto/create-hotels.dto';
 import { CreateSettlingDto } from './dto/create-settling.dto';
+import { UpdateHotelDto } from './dto/update-hotels.dto';
 import { UpdateSettlingDto } from './dto/update-settling.dto';
 import { HotelsService } from './hotels.service';
-import { CreateHotelDto } from './dto/create-hotels.dto';
-import { map } from 'rxjs';
-import { UpdateHotelDto } from './dto/update-hotels.dto';
+import { SettlingService } from './settling.service';
 
 @Controller('settling')
 export class SettlingController {

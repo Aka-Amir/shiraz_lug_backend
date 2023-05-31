@@ -21,6 +21,7 @@ export class UsersService {
       gender: createUserDto.gender,
       phoneNumber: createUserDto.phoneNumber,
       city: createUserDto.city,
+      orderedFood: null
     });
     return from(user.save());
   }
