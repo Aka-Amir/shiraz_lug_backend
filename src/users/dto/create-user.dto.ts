@@ -32,6 +32,8 @@ export class CreateUserDto {
     })
     city: string;
 
+
+    orderedFood?: string;
     needTaxi?: boolean;
     presenceTime?: string;
 }

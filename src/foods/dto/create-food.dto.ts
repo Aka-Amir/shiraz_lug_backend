@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsNumber, Min } from "class-validator";
 
 export class CreateFoodDto {
 
@@ -18,4 +18,15 @@ export class CreateFoodDto {
         message: 'drink_is_empty'
     })
     drink: string;
+
+    @Min(0, {
+        message: 'price_is_tooLow'
+    })
+    @IsNumber({
+        allowNaN: false,
+        allowInfinity: false,
+    }, {
+        message: 'price_is_empty'
+    })
+    price: number;
 }

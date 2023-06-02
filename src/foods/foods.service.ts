@@ -21,6 +21,7 @@ export class FoodsService {
       food: createFoodDto.food,
       drink: createFoodDto.drink,
       desert: createFoodDto.desert,
+      price: createFoodDto.price
     });
     return from(document.save());
   }

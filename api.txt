@@ -1,0 +1,16 @@
+users:
+	POST users/ -> Create user
+	GET users/ -> Get all users
+	GET users/:id -> Get user info
+	PUT users/:id -> Update user
+	DELETE users/:id -> Delete user 
+	
+	+989xxxxxxxxx
+
+settling:
+	POST settling/reservation
+
+	GET settling/hotel
+
+food:
+	POST foods/

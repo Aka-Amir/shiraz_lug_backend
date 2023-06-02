@@ -36,6 +36,16 @@ export class SettlingService {
     );
   }
 
+  findByUserID(id: string) {
+    return from(
+      this.settlingModel
+        .findOne({ user: id }, { __v: 0 })
+        .populate('user', { __v: 0 })
+        .populate('hotel', { __v: 0 })
+        .exec(),
+    );
+  }
+
   update(id: string, updateSettlingDto: UpdateSettlingDto) {
     return from(
       this.settlingModel

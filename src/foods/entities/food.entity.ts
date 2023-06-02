@@ -26,6 +26,12 @@ export class Food {
         type: String,
     })
     drink: string;
+
+    @Prop({
+        required: true,
+        type: Number
+    })
+    price: number;
 }
 
 export type FoodDocument = Food & Document;

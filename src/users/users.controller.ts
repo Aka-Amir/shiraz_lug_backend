@@ -11,17 +11,35 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { map } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
+import { PaymentService } from '../@utils/Payment';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly paymentService: PaymentService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto).pipe(
       map((item) => {
         return { ID: item._id.toString() };
+      }),
+    );
+  }
+
+  @Get('/pay/:id')
+  Pay(@Param() userID: string) {
+    this.usersService.pay(userID).pipe(
+      mergeMap((price) => {
+        return this.paymentService.createTransaction(price.total).pipe(
+          map((item) => ({
+            ...price,
+            ...item,
+          })),
+        );
       }),
     );
   }
