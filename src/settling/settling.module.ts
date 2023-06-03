@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { SettlingService } from './settling.service';
-import { SettlingController } from './settling.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Hotels, Settling } from './entities';
 import { HotelsService } from './hotels.service';
-import { PaymentModule } from '../@utils/Payment';
+import { SettlingController } from './settling.controller';
+import { SettlingService } from './settling.service';
 
 @Module({
   imports: [

@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
@@ -31,8 +30,8 @@ export class UsersController {
   }
 
   @Get('/pay/:id')
-  Pay(@Param() userID: string) {
-    this.usersService.pay(userID).pipe(
+  Pay(@Param('id') userID: string) {
+    return this.usersService.pay(userID).pipe(
       mergeMap((price) => {
         return this.paymentService.createTransaction(price.total).pipe(
           map((item) => ({

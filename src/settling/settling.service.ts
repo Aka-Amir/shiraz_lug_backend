@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { CreateSettlingDto } from './dto/create-settling.dto';
 import { UpdateSettlingDto } from './dto/update-settling.dto';
 import { Settling } from './entities';
-import { from } from 'rxjs';
+import { catchError, from } from 'rxjs';
 
 @Injectable()
 export class SettlingService {
@@ -37,12 +37,18 @@ export class SettlingService {
   }
 
   findByUserID(id: string) {
+    console.log('Finding by user id ' + id);
     return from(
       this.settlingModel
         .findOne({ user: id }, { __v: 0 })
         .populate('user', { __v: 0 })
         .populate('hotel', { __v: 0 })
         .exec(),
+    ).pipe(
+      catchError((e) => {
+        console.log(e);
+        throw e;
+      }),
     );
   }
 

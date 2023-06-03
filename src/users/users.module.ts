@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { DocumentManager } from './entities/user.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PaymentModule } from '../@utils/Payment';
-import { SettlingModule } from 'src/settling/settling.module';
+import { SettlingModule } from '../settling/settling.module';
 
 @Module({
   imports: [

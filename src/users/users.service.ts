@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { from, map, merge, mergeMap } from 'rxjs';
+import { catchError, from, map, mergeMap, throwError } from 'rxjs';
+import { SettlingService } from '../settling/settling.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DocumentManager, User, UserDocument } from './entities/user.entity';
-import { SettlingService } from 'src/settling/settling.service';
+import { DocumentManager, UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +23,7 @@ export class UsersService {
       gender: createUserDto.gender,
       phoneNumber: createUserDto.phoneNumber,
       city: createUserDto.city,
-      orderedFood: null,
+      orderedFood: createUserDto.orderedFood || null,
       needTaxi: createUserDto.needTaxi || false,
       presenceTime: createUserDto.presenceTime || 'full',
     });
@@ -41,19 +41,28 @@ export class UsersService {
   pay(userID: string) {
     return from(
       this.model
-        .findById(userID, { orderedFood: 1, _id: 1 })
+        .findOne({ _id: userID }, { orderedFood: 1, _id: 1 })
         .populate('orderedFood')
         .exec(),
     )
       .pipe(
+        catchError((_) => {
+          console.log('Failed');
+          throw new Error('An error has been happen at finding user');
+        }),
         map((v) => {
+          console.log('Mapping data');
           return {
             foodPrice: v.orderedFood.price,
-            id: v._id.toString(),
+            id: v._id,
           };
         }),
       )
       .pipe(
+        map((item) => {
+          Logger.log('Correct data until now');
+          return item;
+        }),
         mergeMap(({ foodPrice, id }) =>
           this.settlingService.findByUserID(id).pipe(
             map(({ hotel, user, days }) => {
@@ -64,6 +73,10 @@ export class UsersService {
                 needTaxi: user.needTaxi,
                 total: foodPrice + hotelPrice,
               };
+            }),
+            catchError((e) => {
+              console.log(e);
+              throw new Error('Cant find user in settling service');
             }),
           ),
         ),

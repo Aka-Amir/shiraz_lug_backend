@@ -1,19 +1,25 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { IPaymentConfig } from './IPaymentConfig';
-import { PAYMENT_CONFIG_PROVIDER } from './Payment.consts';
-import { catchError, map } from 'rxjs';
+import { PAYMENT_CONFIG_PROVIDER } from './Payment.constants';
+import { catchError, map, mergeMap } from 'rxjs';
+import { PaymentDbService } from './PaymentDb.service';
 
 @Injectable()
 export class PaymentService {
   private readonly BASE: string = 'https://mellipay.ir/api/v1';
   private readonly HOST: string = 'https://shirazlug.ir';
-  private lastTransactionID: number = 0;
+  private lastTransactionID = 0;
 
   constructor(
     private httpService: HttpService,
     @Inject(PAYMENT_CONFIG_PROVIDER) private readonly config: IPaymentConfig,
+    private dbService: PaymentDbService,
   ) {}
+
+  public get db() {
+    return this.dbService;
+  }
 
   createTransaction(amount: number) {
     let transactionID = Date.now();
@@ -43,18 +49,29 @@ export class PaymentService {
         catchError((e) => {
           throw e;
         }),
+      )
+      .pipe(
+        mergeMap((item) => {
+          return this.dbService
+            .create(transactionID, amount)
+            .pipe(map(({ _id }) => ({ ID: _id, amount, ...item })));
+        }),
       );
   }
 
   verifyTransaction(Mellipay_Tracking_Code: string, TransactionId: number) {
-    return this.verfiy(Mellipay_Tracking_Code, TransactionId, "verify");
+    return this.verify(Mellipay_Tracking_Code, TransactionId, 'verify');
   }
 
-  inqueryTransaction(Mellipay_Tracking_Code: string, TransactionId: number) {
-    return this.verfiy(Mellipay_Tracking_Code, TransactionId, "inquiry");
+  inquiryTransaction(Mellipay_Tracking_Code: string, TransactionId: number) {
+    return this.verify(Mellipay_Tracking_Code, TransactionId, 'inquiry');
   }
 
-  private verfiy(Mellipay_Tracking_Code: string, TransactionId: number, action: "inquiry" | "verify") {
+  private verify(
+    Mellipay_Tracking_Code: string,
+    TransactionId: number,
+    action: 'inquiry' | 'verify',
+  ) {
     return this.httpService
       .post(
         `${this.BASE}/payment/${action}/`,

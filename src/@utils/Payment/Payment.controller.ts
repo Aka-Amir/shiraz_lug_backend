@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Inject, Param, Post, Redirect, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Logger, Post, Res } from '@nestjs/common';
+import { Observable, map, mergeMap } from 'rxjs';
+import { IPaymentConfig } from './IPaymentConfig';
+import { PAYMENT_CONFIG_PROVIDER } from './Payment.constants';
 import { PaymentService } from './Payment.service';
 import { GateResponse } from './types/gateResponse.type';
-import { PAYMENT_CONFIG_PROVIDER } from './Payment.consts';
-import { IPaymentConfig } from './IPaymentConfig';
 
 @Controller('payment')
 export class PaymentController {
@@ -10,24 +11,39 @@ export class PaymentController {
     private service: PaymentService,
     @Inject(PAYMENT_CONFIG_PROVIDER) private config: IPaymentConfig,
   ) {}
-  @Get(':amount')
-  private testModule(@Param() amount: string, @Res() res) {
-    this.service.createTransaction(((+amount) || 10000) * 10)
-    .subscribe({
-        next(value) {
-            res.redirect(value.url);
-        },
-        error(e) {
-            console.log(e);
-        }
-    });
-  }
 
   @Post()
-  private test(@Body() body: GateResponse, @Res() res) {
-    res.redirect(`${this.config.redirectionLink}?code=${body.Status}`);
-    return {
-      message: true,
-    };
+  verify(@Body() body: GateResponse, @Res() res) {
+    return this.service.db
+      .findByTrackingCode(body.tracking_code)
+      .pipe(
+        mergeMap((item) => {
+          const observable =
+            body.Status !== 3
+              ? new Observable((subscriber) => {
+                  subscriber.next(item);
+                })
+              : this.service.verifyTransaction(
+                  item.trackingCode,
+                  item.transactionID,
+                );
+          return observable.pipe(map(() => item));
+        }),
+        mergeMap((item) => {
+          return this.service.db.appendTransactionDetails(
+            item._id.toString(),
+            body,
+          );
+        }),
+      )
+      .subscribe({
+        next() {
+          res.redirect(`${this.config.redirectionLink}?code=${body.Status}`);
+        },
+        error(e) {
+          Logger.error(e);
+          res.redirect(`${this.config.redirectionLink}?code=${-1}`);
+        },
+      });
   }
 }

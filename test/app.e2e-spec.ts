@@ -15,9 +15,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(404)
+  it('Payment Test', () => {
+    return request(app.getHttpServer()).get('/').expect(404);
   });
 });

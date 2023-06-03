@@ -12,16 +12,19 @@ export class CreateSettlingDto {
   hotelID: string;
 
   @Min(1, {
-    message: 'invalid_days'
+    message: 'invalid_days',
   })
   @Max(30, {
-    message: 'exceeded_limit_days'
+    message: 'exceeded_limit_days',
   })
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-  }, {
-    message: 'invalid_days'
-  })
+  @IsNumber(
+    {
+      allowInfinity: false,
+      allowNaN: false,
+    },
+    {
+      message: 'invalid_days',
+    },
+  )
   days: number;
 }

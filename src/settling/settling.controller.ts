@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { map } from 'rxjs';
 import { CreateHotelDto } from './dto/create-hotels.dto';
@@ -19,7 +19,7 @@ import { SettlingService } from './settling.service';
 export class SettlingController {
   constructor(
     private readonly settlingService: SettlingService,
-    private readonly hotlesService: HotelsService,
+    private readonly hotelsService: HotelsService,
   ) {}
 
   @Post('/reservations')
@@ -55,31 +55,31 @@ export class SettlingController {
   // HOTELS
   @Post('/hotel')
   createHotel(@Body() dto: CreateHotelDto) {
-    return this.hotlesService
+    return this.hotelsService
       .create(dto)
       .pipe(map((item) => ({ _id: item._id.toString() })));
   }
 
   @Get('/hotel')
   findAllHotels() {
-    return this.hotlesService.findAll().pipe(i => {
-      console.log(i)
+    return this.hotelsService.findAll().pipe((i) => {
+      console.log(i);
       return i;
     });
   }
 
   @Get('/hotel/:id')
   findOneHotel(@Param('id') id: string) {
-    return this.hotlesService.findOne(id);
+    return this.hotelsService.findOne(id);
   }
 
   @Put('/hotel/:id')
   updateHotel(@Param('id') id: string, @Body() dto: UpdateHotelDto) {
-    return this.hotlesService.update(id, dto);
+    return this.hotelsService.update(id, dto);
   }
 
   @Delete('/hotel/:id')
   removeHotel(@Param('id') id: string) {
-    return this.hotlesService.remove(id);
+    return this.hotelsService.remove(id);
   }
 }

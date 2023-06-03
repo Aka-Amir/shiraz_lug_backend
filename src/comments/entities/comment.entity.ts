@@ -1,14 +1,14 @@
 import { Schema, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { MongoDocumentManager } from 'src/@utils';
+import { MongoDocumentManager } from '../../@utils';
 
 @Schema()
 export class Comment {
-    @Prop({
-        required: true,
-        type: String
-    })
-    message: string;
+  @Prop({
+    required: true,
+    type: String,
+  })
+  message: string;
 }
 
 export type CommentDocument = Comment & Document;

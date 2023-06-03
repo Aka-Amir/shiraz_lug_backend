@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { map } from 'rxjs';
 import { CreateFoodDto } from './dto/create-food.dto';

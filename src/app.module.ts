@@ -7,9 +7,14 @@ import { SettlingModule } from './settling/settling.module';
 import { FoodsModule } from './foods/foods.module';
 import { CommentsModule } from './comments/comments.module';
 
-
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost/shiraz_lug'), UsersModule, SettlingModule, FoodsModule, CommentsModule],
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost/shiraz_lug'),
+    UsersModule,
+    SettlingModule,
+    FoodsModule,
+    CommentsModule,
+  ],
   controllers: [AppController],
   providers: [],
 })
