@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { catchError, from } from 'rxjs';
 import { CreateSettlingDto } from './dto/create-settling.dto';
 import { UpdateSettlingDto } from './dto/update-settling.dto';
 import { Settling } from './entities';
-import { catchError, from } from 'rxjs';
 
 @Injectable()
 export class SettlingService {
   constructor(
-    @InjectModel(Settling.SettlingDocumentManager.collectionName)
+    @InjectModel('col_settling')
     private settlingModel: Model<Settling.SettlingDocument>,
   ) {}
 

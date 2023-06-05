@@ -3,14 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateHotelDto } from './dto/create-hotels.dto';
 import { UpdateHotelDto } from './dto/update-hotels.dto';
-import { Hotels } from './entities';
+import { HotelsDocumentManager, HotelsDocument } from './entities/hotels.entity';
 import { from } from 'rxjs';
 
 @Injectable()
 export class HotelsService {
   constructor(
-    @InjectModel(Hotels.HotelsDocumentManager.collectionName)
-    private hotelsModel: Model<Hotels.HotelsDocument>,
+    @InjectModel('col_hotels')
+    private hotelsModel: Model<HotelsDocument>,
   ) {}
 
   create(dto: CreateHotelDto) {

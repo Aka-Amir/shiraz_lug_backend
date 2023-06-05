@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Hotels, Settling } from './entities';
 import { HotelsService } from './hotels.service';
@@ -22,4 +22,5 @@ import { SettlingService } from './settling.service';
   providers: [SettlingService, HotelsService],
   exports: [SettlingService],
 })
-export class SettlingModule {}
+export class SettlingModule {
+}

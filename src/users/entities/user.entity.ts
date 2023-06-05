@@ -22,7 +22,13 @@ export class User {
     type: String,
     required: true,
   })
-  phoneNumber: string; // no confirmation
+  phoneNumber: string; 
+
+  @Prop({
+    type: Number,
+    default: () => Math.floor(Math.random() * 100000)
+  })
+  verificationCode: number;
 
   @Prop({
     type: String,

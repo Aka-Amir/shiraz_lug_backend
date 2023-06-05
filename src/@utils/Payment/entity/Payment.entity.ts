@@ -1,6 +1,7 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as schema } from 'mongoose';
 import { MongoDocumentManager } from '../../MongoDocumentManager';
+import { User, DocumentManager as UsersDocumentManager } from '../../../users/entities/user.entity';
 
 @Schema()
 export class Payment {
@@ -9,6 +10,13 @@ export class Payment {
     type: Number,
   })
   transactionID: number;
+
+  @Prop({
+    type: schema.Types.ObjectId,
+    require: true,
+    ref: 'col_users'
+  })
+  user: User
 
   @Prop({
     type: String,

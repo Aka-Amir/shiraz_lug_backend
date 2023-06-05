@@ -21,7 +21,7 @@ export class PaymentService {
     return this.dbService;
   }
 
-  createTransaction(amount: number) {
+  createTransaction(amount: number, userID: string) {
     let transactionID = Date.now();
     if (transactionID === this.lastTransactionID) transactionID += 1;
     this.lastTransactionID = transactionID;
@@ -53,7 +53,7 @@ export class PaymentService {
       .pipe(
         mergeMap((item) => {
           return this.dbService
-            .create(transactionID, amount)
+            .create(item.token,transactionID, amount, userID)
             .pipe(map(({ _id }) => ({ ID: _id, amount, ...item })));
         }),
       );
@@ -90,7 +90,6 @@ export class PaymentService {
       .pipe(
         map((item) => item.data),
         catchError((e) => {
-          console.log(e);
           throw e;
         }),
       );

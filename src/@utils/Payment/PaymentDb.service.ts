@@ -15,10 +15,12 @@ export class PaymentDbService {
     private readonly model: Model<PaymentDocument>,
   ) {}
 
-  public create(transactionID: number, amount: number) {
+  public create(trackingCode: string, transactionID: number, amount: number, userID: string) {
     const document = new this.model({
       transactionID,
       transactionAmount: amount,
+      trackingCode,
+      user: userID,
     });
     return from(document.save());
   }
@@ -46,10 +48,22 @@ export class PaymentDbService {
   }
 
   public findByID(id: string) {
-    return from(this.model.findOne({ _id: id }, { __v: 0 }).exec());
+    return from(
+      this.model
+        .findOne({ _id: id }, { __v: 0 })
+        .populate('user', { __v: 0 })
+        .exec(),
+    );
   }
 
   public findByTrackingCode(code: string) {
-    return from(this.model.findOne({ trackingCode: code }, { __v: 0 }).exec());
+    return from(
+      this.model
+        .findOne({ trackingCode: code }, { __v: 0 })
+        .populate('user', { __v: 0 })
+        .populate('user.settling', { __v: 0 })
+        .populate('user.settling.hotel', { __v: 0 })
+        .exec(),
+    );
   }
 }

@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { catchError, from, map, mergeMap, throwError } from 'rxjs';
+import { catchError, from, map, mergeMap } from 'rxjs';
 import { SettlingService } from '../settling/settling.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DocumentManager, UserDocument } from './entities/user.entity';
+import { UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(DocumentManager.collectionName)
+    @InjectModel('col_users')
     private model: Model<UserDocument>,
     private settlingService: SettlingService,
   ) {}
@@ -31,7 +31,7 @@ export class UsersService {
   }
 
   findAll() {
-    return from(this.model.find({}, { __v: 0 }).exec());
+    return from(this.model.find({}, { __v: 0, verificationCode: 0 }).exec());
   }
 
   findOne(id: string) {
@@ -54,7 +54,7 @@ export class UsersService {
           console.log('Mapping data');
           return {
             foodPrice: v.orderedFood.price,
-            id: v._id,
+            id: v?._id,
           };
         }),
       )
@@ -65,12 +65,13 @@ export class UsersService {
         }),
         mergeMap(({ foodPrice, id }) =>
           this.settlingService.findByUserID(id).pipe(
-            map(({ hotel, user, days }) => {
-              const hotelPrice = hotel.perDayPrice * days;
+            map((data) => {
+              const hotelPrice =
+                (data?.hotel?.perDayPrice || 0) * (data?.days || 0);
               return {
                 hotelPrice,
                 foodPrice,
-                needTaxi: user.needTaxi,
+                needTaxi: data?.user?.needTaxi,
                 total: foodPrice + hotelPrice,
               };
             }),
@@ -89,6 +90,21 @@ export class UsersService {
         .updateOne(
           { _id: id },
           { ...JSON.parse(JSON.stringify(updateUserDto)) },
+        )
+        .exec(),
+    );
+  }
+
+  verify(id: string, code: number) {
+    return from(
+      this.model
+        .updateOne(
+          {
+            $and: [{ _id: id }, { verificationCode: code }],
+          },
+          {
+            verificationCode: 0,
+          },
         )
         .exec(),
     );

@@ -1,9 +1,12 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
+  constructor() {}
   @Get()
-  getHello(): void {
-    throw new NotFoundException();
+  getHello() {
+    return {
+      message: true
+    }
   }
 }
