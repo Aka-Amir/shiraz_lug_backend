@@ -9,7 +9,10 @@ import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/shiraz_lug'),
+    MongooseModule.forRoot('mongodb://localhost/shirazlu_shirazlug', {
+      user: 'shirazlu_abbs',
+      pass: '@$h!R@_Z+l^G'
+    }),
     UsersModule,
     SettlingModule,
     FoodsModule,

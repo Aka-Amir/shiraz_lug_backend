@@ -18,7 +18,7 @@ import { SettlingModule } from '../settling/settling.module';
     PaymentModule.register({
       apiKey: '0ktFBxNVj2Beel_NVA',
       secretKey: 'pgno6T3Gs4ef7p2812Ec',
-      redirectionLink: 'https://google.com',
+      redirectionLink: 'https://event.shirazlug.ir/',
     }),
     SmsModule.register({
       number: '10004223',
