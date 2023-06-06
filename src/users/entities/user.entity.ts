@@ -3,6 +3,7 @@ import { Document, Schema as TypeSchema } from 'mongoose';
 import { MongoDocumentManager } from '../../@utils';
 import { UsersGender } from '../../enums/users-gender.enum';
 import { Food, FoodDocumentManager } from '../../foods/entities/food.entity';
+import { RandomNumber } from '../../@utils/RandomNumber';
 
 @Schema()
 export class User {
@@ -21,12 +22,13 @@ export class User {
   @Prop({
     type: String,
     required: true,
+    unique: true,
   })
-  phoneNumber: string; 
+  phoneNumber: string;
 
   @Prop({
     type: Number,
-    default: () => Math.floor(Math.random() * 100000)
+    default: RandomNumber,
   })
   verificationCode: number;
 
@@ -44,30 +46,38 @@ export class User {
 
   @Prop({
     type: String,
-    required: true,
+    default: '',
   })
   city: string;
 
   @Prop({
     ref: FoodDocumentManager.collectionName,
-    type: TypeSchema.Types.ObjectId
+    type: TypeSchema.Types.ObjectId,
   })
   orderedFood: Food;
 
   @Prop({
     type: Boolean,
-    default: false
+    default: false,
   })
   needTaxi: boolean;
 
   @Prop({
     type: String,
-    default: "full"
+    default: 'full',
   })
   presenceTime: string;
 
+  @Prop({
+    type: Date,
+    default: () => {
+      const date = new Date();
+      date.setMinutes(date.getMinutes() + 2);
+      return date;
+    }
+  })
+  lastCodeSentDate: Date;
 }
-
 
 export type UserDocument = User & Document;
 export const DocumentManager = new MongoDocumentManager(User);

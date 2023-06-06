@@ -22,7 +22,7 @@ export class UsersService {
       email: createUserDto.email,
       gender: createUserDto.gender,
       phoneNumber: createUserDto.phoneNumber,
-      city: createUserDto.city,
+      city: createUserDto.city || '',
       orderedFood: createUserDto.orderedFood || null,
       needTaxi: createUserDto.needTaxi || false,
       presenceTime: createUserDto.presenceTime || 'full',
@@ -82,6 +82,38 @@ export class UsersService {
           ),
         ),
       );
+  }
+
+  updateVerficationCode(id: string, code: number) {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() + 2);
+    return from(
+      this.model
+        .findOneAndUpdate(
+          {
+            $and: [
+              { _id: id },
+              {
+                lastCodeSentDate: {
+                  $lt: new Date(Date.now()).toISOString(),
+                },
+              },
+              {
+                verificationCode: {
+                  $gt: 0,
+                },
+              },
+            ],
+          },
+          {
+            $set: {
+              verificationCode: code,
+              lastCodeSentDate: date,
+            },
+          },
+        )
+        .exec(),
+    );
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

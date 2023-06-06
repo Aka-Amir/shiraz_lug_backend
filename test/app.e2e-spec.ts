@@ -5,7 +5,7 @@ import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  let userID = '';
+  let userID = '647ee82b4d1049ec73c0155b';
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -16,22 +16,8 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('Create food', async () => {
-    request(app.getHttpServer())
-      .post('/foods')
-      .send({
-        foodSetDisplayName: 'kebab with salad and soda',
-        food: 'kebab',
-        desert: 'salad',
-        drink: 'soda',
-        price: 24000,
-      })
-    const foods = await request(app.getHttpServer()).get('/foods').expect(200);
-    console.log(foods.body);
-  });
-
-  it('Payment Test', async () => {
-    const createUser = await request(app.getHttpServer())
+  it('/users (POST)', () => {
+    return request(app.getHttpServer())
       .post('/users')
       .send({
         firstName: 'Amir',
@@ -41,7 +27,24 @@ describe('AppController (e2e)', () => {
         phoneNumber: '+989353756115',
         city: 'Shiraz',
       })
-      .expect(201);
+      .expect(201)
+      .then((s) => {
+        userID = s.body.ID;
+        console.log(s.body);
+        expect(userID).not.toBeFalsy();
+      });
   });
 
+  it('Resend Code', () => {
+    return request(app.getHttpServer())
+      .post('/users/resend_code')
+      .send({ id: userID })
+      .expect(201)
+      .then((r) => {
+        request(app.getHttpServer())
+          .post('/users/resend_code')
+          .send({ id: userID })
+          .expect(400);
+      });
+  });
 });

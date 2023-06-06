@@ -30,11 +30,8 @@ export class CreateUserDto {
   })
   phoneNumber: string;
 
-  @IsNotEmpty({
-    message: 'city_is_empty',
-  })
-  city: string;
-
+  
+  city?: string;
   orderedFood?: string;
   needTaxi?: boolean;
   presenceTime?: string;

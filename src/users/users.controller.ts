@@ -6,6 +6,8 @@ import {
   Param,
   Delete,
   Put,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,6 +15,8 @@ import { UpdateUserDto, VerficationDto } from './dto/update-user.dto';
 import { map, mergeMap } from 'rxjs';
 import { PaymentService } from '../@utils/Payment';
 import { SmsPatternBuilder, SmsService } from '../@utils';
+import { ResendCodeDTO } from './dto/resend-code.dto';
+import { RandomNumber } from '../@utils/RandomNumber';
 
 @Controller('users')
 export class UsersController {
@@ -37,6 +41,27 @@ export class UsersController {
               return { ID: item._id.toString() };
             }),
           );
+      }),
+    );
+  }
+
+  @Post('resend_code')
+  resendCode(@Body() dto: ResendCodeDTO) {
+    const newCode = RandomNumber();
+    return this.usersService.updateVerficationCode(dto.id, newCode).pipe(
+      map((result) => {
+        if (!result) throw new ForbiddenException();
+        return result;
+      }),
+      mergeMap((result) => {
+        if (!result) throw new ForbiddenException();
+        return this.smsService
+          .sendPatternMessage(
+            new SmsPatternBuilder()
+              .setNumber(result.phoneNumber)
+              .setCode(newCode),
+          )
+          .pipe(map(() => ({ message: 'sent' })));
       }),
     );
   }
