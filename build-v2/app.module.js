@@ -25,7 +25,17 @@ exports.AppModule = AppModule = __decorate([
                 rootPath: (0, path_1.join)(__dirname, '..', 'public_html'),
                 serveRoot: ''
             }),
-            mongoose_1.MongooseModule.forRoot('mongodb://shirazlu_abbs:%40%24h!R%40_Z%2Bl%5EG@event.shirazlug.ir/?authMechanism=DEFAULT&authSource=shirazlu_shirazlug'),
+            mongoose_1.MongooseModule.forRoot('mongodb://event.shirazlug.ir', {
+                user: 'shirazlu_abbs',
+                pass: '@$h!R@_Z+l^G',
+                dbName: 'shirazlu_shirazlug',
+                auth: {
+                    password: '@$h!R@_Z+l^G',
+                    username: 'shirazlu_abbs',
+                },
+                authMechanism: 'DEFAULT',
+                authSource: "shirazlu_shirazlug"
+            }),
             users_module_1.UsersModule,
             settling_module_1.SettlingModule,
             foods_module_1.FoodsModule,
