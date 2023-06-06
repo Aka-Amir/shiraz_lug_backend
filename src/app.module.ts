@@ -7,12 +7,16 @@ import { SettlingModule } from './settling/settling.module';
 import { FoodsModule } from './foods/foods.module';
 import { CommentsModule } from './comments/comments.module';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/shirazlu_shirazlug', {
-      user: 'shirazlu_abbs',
-      pass: '@$h!R@_Z+l^G'
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public_html'),
+      serveRoot: ''
     }),
+    MongooseModule.forRoot('mongodb://shirazlu_abbs:%40%24h!R%40_Z%2Bl%5EG@event.shirazlug.ir/?authMechanism=DEFAULT&authSource=shirazlu_shirazlug'),
     UsersModule,
     SettlingModule,
     FoodsModule,

@@ -15,7 +15,7 @@ import { UpdateSettlingDto } from './dto/update-settling.dto';
 import { HotelsService } from './hotels.service';
 import { SettlingService } from './settling.service';
 
-@Controller('settling')
+@Controller('api/settling')
 export class SettlingController {
   constructor(
     private readonly settlingService: SettlingService,

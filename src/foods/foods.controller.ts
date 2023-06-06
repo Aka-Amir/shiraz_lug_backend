@@ -12,7 +12,7 @@ import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { FoodsService } from './foods.service';
 
-@Controller('foods')
+@Controller('api/foods')
 export class FoodsController {
   constructor(private readonly foodsService: FoodsService) {}
 

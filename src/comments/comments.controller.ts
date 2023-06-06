@@ -12,7 +12,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { map } from 'rxjs';
 
-@Controller('comments')
+@Controller('api/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 

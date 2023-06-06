@@ -7,7 +7,7 @@ import { PaymentService } from './Payment.service';
 import { GateResponse } from './types/gateResponse.type';
 import { SettlingService } from '../../settling/settling.service';
 
-@Controller('payment')
+@Controller('api/payment')
 export class PaymentController {
   constructor(
     private service: PaymentService,

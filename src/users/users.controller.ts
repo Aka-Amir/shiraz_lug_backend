@@ -18,7 +18,7 @@ import { SmsPatternBuilder, SmsService } from '../@utils';
 import { ResendCodeDTO } from './dto/resend-code.dto';
 import { RandomNumber } from '../@utils/RandomNumber';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
