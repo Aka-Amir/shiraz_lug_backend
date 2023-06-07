@@ -41,6 +41,9 @@ export class PaymentDbService {
             cardHashPan: gateWayResponse.CardHashPan,
             cardMaskPan: gateWayResponse.CardMaskPan,
             date: gateWayResponse.datefield,
+            $set: {
+              status: gateWayResponse.Status,
+            }
           },
         )
         .exec(),

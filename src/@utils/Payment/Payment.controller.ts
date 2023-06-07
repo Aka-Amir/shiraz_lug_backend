@@ -88,11 +88,11 @@ export class PaymentController {
       .subscribe({
         next: (result) => {
           Logger.debug(result);
-          res.redirect(`${this.config.redirectionLink}?code=${body.Status}`);
+          res.redirect(`${this.config.redirectionLink}?code=${body.Status}?payment=true`);
         },
         error: (e) => {
           Logger.error(e);
-          res.redirect(`${this.config.redirectionLink}?code=${-1}`);
+          res.redirect(`${this.config.redirectionLink}?code=${-1}?payment=true`);
         },
       });
   }
