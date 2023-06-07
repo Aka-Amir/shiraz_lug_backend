@@ -16,8 +16,8 @@ import { SettlingModule } from '../settling/settling.module';
       },
     ]),
     PaymentModule.register({
-      apiKey: '0ktFBxNVj2Beel_NVA',
-      secretKey: 'pgno6T3Gs4ef7p2812Ec',
+      apiKey: 'Y35HLNuPJmfG8FY3o3', //'0ktFBxNVj2Beel_NVA',
+      secretKey: 'Ttbhtay53jH7uoWjEbt2', //'pgno6T3Gs4ef7p2812Ec',
       redirectionLink: 'https://event.shirazlug.ir/',
     }),
     SmsModule.register({
