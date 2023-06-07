@@ -8,7 +8,7 @@ import { PaymentDbService } from './PaymentDb.service';
 @Injectable()
 export class PaymentService {
   private readonly BASE: string = 'https://mellipay.ir/api/v1';
-  private readonly HOST: string = 'https://shirazlug.ir';
+  private readonly HOST: string = 'https://event.shirazlug.ir/api';
   private lastTransactionID = 0;
 
   constructor(

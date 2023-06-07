@@ -24,7 +24,7 @@ export class PaymentModule {
           },
         ]),
         SmsModule.register({
-          number: '10004223',
+          number: '3000505',
           password: '27385Tky',
           username: '2283220531',
           apiKey: 'FceUMKBKCGXpptKBPjgOelXpjX1XOCnstkWUD5eXzH0=',
