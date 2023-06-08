@@ -7,6 +7,7 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NestInterceptor,
   NotFoundException,
 } from '@nestjs/common';
@@ -37,7 +38,7 @@ export class MongooseInterceptor implements NestInterceptor {
         }
 
         if(error instanceof AxiosError) {
-          throw new HttpException(error.message, (error.status || 412));
+          throw new HttpException(error.response.data, (error.status || 412));
         }
         throw InternalServerErrorException;
       }),
