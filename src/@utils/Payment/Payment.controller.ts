@@ -1,11 +1,11 @@
-import { Body, Controller, Inject, Logger, Post, Res } from '@nestjs/common';
-import { EMPTY, Observable, catchError, iif, map, mergeMap } from 'rxjs';
+import { Controller, Get, Inject, Logger, Query, Res } from '@nestjs/common';
+import { Observable, iif, map, mergeMap } from 'rxjs';
+import { SettlingService } from '../../settling/settling.service';
 import { SmsPatternBuilder, SmsService } from '../Sms';
 import { IPaymentConfig } from './IPaymentConfig';
 import { PAYMENT_CONFIG_PROVIDER } from './Payment.constants';
 import { PaymentService } from './Payment.service';
 import { GateResponse } from './types/gateResponse.type';
-import { SettlingService } from '../../settling/settling.service';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -16,28 +16,42 @@ export class PaymentController {
     @Inject(PAYMENT_CONFIG_PROVIDER) private readonly config: IPaymentConfig,
   ) {}
 
-  @Post()
-  verify(@Body() body: GateResponse, @Res() res) {
+  @Get()
+  verify(@Query() query: GateResponse, @Res() res) {
     return this.service.db
-      .findByTrackingCode(body.tracking_code)
+      .findByTrackingCode(query.trackId)
       .pipe(
         mergeMap((item) => {
-          const observable =
-            body.Status !== -1
-              ? new Observable((subscriber) => {
-                  subscriber.next(item);
-                })
-              : this.service.verifyTransaction(
-                  item.trackingCode,
-                  item.transactionID,
-                );
-          return observable.pipe(map(() => item));
+          let obs = new Observable((s) =>
+            s.next({
+              status: query.status,
+            }),
+          );
+
+          if (query.success == 0) {
+            obs = this.service.verifyTransaction(item.trackingCode);
+          }
+          return obs.pipe(
+            map((data: any) => ({
+              user: item.user,
+              _id: item._id,
+              status: data.status,
+            })),
+          );
         }),
+      )
+      .pipe(
         mergeMap((item) => {
           return this.service.db
-            .appendTransactionDetails(item._id.toString(), body)
+            .appendTransactionDetails(item._id.toString(), {
+              ...query,
+              status: item.status,
+            })
             .pipe(
               map(() => {
+                if (query.success == 0) {
+                  throw new Error('Payment Failed');
+                }
                 return {
                   phoneNumber: item.user.phoneNumber,
                   userName: item.user.firstName,
@@ -52,47 +66,46 @@ export class PaymentController {
             .pipe(map((doc) => ({ ...item, settling: doc })));
         }),
         mergeMap((result) => {
-          return iif(
-            () => body.Status == 3,
-            this.smsClient
-              .sendPatternMessage(
-                new SmsPatternBuilder()
-                  .setNumber(result.phoneNumber)
-                  .setPrimaryWelcomerPattern(result.userName),
-              )
-              .pipe(
-                mergeMap((i) => {
-                  return iif(
-                    () => {
-                      console.log('RESULT', result);
-                      return !!result.settling;
-                    },
-                    this.smsClient
-                      .sendPatternMessage(
-                        new SmsPatternBuilder()
-                          .setNumber(result.phoneNumber)
-                          .setPrimaryHotelReservation(
-                            result.userName,
-                            result.settling?.hotel?.hotelName,
-                            result.settling?.days,
-                          ),
+          return this.smsClient
+            .sendPatternMessage(
+              new SmsPatternBuilder()
+                .setNumber(result.phoneNumber)
+                .setPrimaryWelcomerPattern(result.userName),
+            )
+            .pipe(
+              mergeMap((i) => {
+                return iif(
+                  () => {
+                    return !!result.settling;
+                  },
+                  this.smsClient.sendPatternMessage(
+                    new SmsPatternBuilder()
+                      .setNumber(result.phoneNumber)
+                      .setPrimaryHotelReservation(
+                        result.userName,
+                        result.settling?.hotel?.hotelName,
+                        result.settling?.days,
                       ),
-                    new Observable((sub) => sub.next(i)),
-                  );
-                }),
-              ),
-            EMPTY,
-          ).pipe(map(() => result));
+                  ),
+                  new Observable((sub) => sub.next(i)),
+                );
+              }),
+            )
+            .pipe(map(() => result));
         }),
       )
       .subscribe({
         next: (result) => {
           Logger.debug(result);
-          res.redirect(`${this.config.redirectionLink}?code=${body.Status}?payment=true`);
+          res.redirect(
+            `${this.config.redirectionLink}?code=${query.status}?payment=true`,
+          );
         },
         error: (e) => {
           Logger.error(e);
-          res.redirect(`${this.config.redirectionLink}?code=${-1}?payment=true`);
+          res.redirect(
+            `${this.config.redirectionLink}?code=${-1}?payment=true`,
+          );
         },
       });
   }

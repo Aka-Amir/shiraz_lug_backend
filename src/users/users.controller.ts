@@ -1,22 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  Put,
-  NotFoundException,
   ForbiddenException,
+  Get,
+  Param,
+  Post,
+  Put,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto, VerficationDto } from './dto/update-user.dto';
 import { map, mergeMap } from 'rxjs';
-import { PaymentService } from '../@utils/Payment';
 import { SmsPatternBuilder, SmsService } from '../@utils';
-import { ResendCodeDTO } from './dto/resend-code.dto';
+import { PaymentService } from '../@utils/Payment';
 import { RandomNumber } from '../@utils/RandomNumber';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ResendCodeDTO } from './dto/resend-code.dto';
+import { UpdateUserDto, VerficationDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
 
 @Controller('api/users')
 export class UsersController {

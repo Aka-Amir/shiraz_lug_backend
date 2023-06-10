@@ -14,18 +14,18 @@ import { join } from 'path';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public_html'),
-      serveRoot: ''
-    }), //mongodb://shirazlu_abbs:%40%24h!R%40_Z%2Bl%5EG@event.shirazlug.ir/?authMechanism=DEFAULT&authSource=shirazlu_shirazlug
+      serveRoot: '',
+    }),
     MongooseModule.forRoot('mongodb://event.shirazlug.ir', {
       user: 'shirazlu_abbs',
       pass: '@$h!R@_Z+l^G',
       dbName: 'shirazlu_shirazlug',
       auth: {
-        password:  '@$h!R@_Z+l^G',
+        password: '@$h!R@_Z+l^G',
         username: 'shirazlu_abbs',
       },
       authMechanism: 'DEFAULT',
-      authSource: "shirazlu_shirazlug"
+      authSource: 'shirazlu_shirazlug',
     }),
     UsersModule,
     SettlingModule,

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { from } from 'rxjs';
 import {
   PaymentDocument,
   PaymentDocumentManager,
 } from './entity/Payment.entity';
-import { Model } from 'mongoose';
 import { GateResponse } from './types/gateResponse.type';
-import { from } from 'rxjs';
 
 @Injectable()
 export class PaymentDbService {
@@ -15,7 +15,12 @@ export class PaymentDbService {
     private readonly model: Model<PaymentDocument>,
   ) {}
 
-  public create(trackingCode: string, transactionID: number, amount: number, userID: string) {
+  public create(
+    trackingCode: string,
+    transactionID: string,
+    amount: number,
+    userID: string,
+  ) {
     const document = new this.model({
       transactionID,
       transactionAmount: amount,
@@ -34,16 +39,10 @@ export class PaymentDbService {
         .updateOne(
           { _id: paymentID },
           {
-            trackingCode: gateWayResponse.tracking_code,
-            transactionAmount: gateWayResponse.transactionAmount,
-            refNum: gateWayResponse.RefNum,
-            customerRefNum: gateWayResponse.CustomerRefNum,
-            cardHashPan: gateWayResponse.CardHashPan,
-            cardMaskPan: gateWayResponse.CardMaskPan,
-            date: gateWayResponse.datefield,
             $set: {
-              status: gateWayResponse.Status,
-            }
+              status: gateWayResponse.status,
+              date: Date.now(),
+            },
           },
         )
         .exec(),

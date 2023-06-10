@@ -1,25 +1,26 @@
 import { Prop, Schema } from '@nestjs/mongoose';
 import { Document, Schema as schema } from 'mongoose';
 import { MongoDocumentManager } from '../../MongoDocumentManager';
-import { User, DocumentManager as UsersDocumentManager } from '../../../users/entities/user.entity';
+import { User } from '../../../users/entities/user.entity';
 
 @Schema()
 export class Payment {
   @Prop({
     required: true,
-    type: Number,
+    type: String,
   })
-  transactionID: number;
+  transactionID: string;
 
   @Prop({
     type: schema.Types.ObjectId,
     require: true,
-    ref: 'col_users'
+    ref: 'col_users',
   })
-  user: User
+  user: User;
 
   @Prop({
     type: String,
+    required: true,
   })
   trackingCode: string;
 
@@ -30,34 +31,15 @@ export class Payment {
 
   @Prop({
     type: Number,
-  })
-  refNum: number;
-
-  @Prop({
-    type: Number,
     default: -1,
   })
   status: number;
 
   @Prop({
-    type: Number,
+    type: Date,
+    default: Date.now,
   })
-  customerRefNum: number;
-
-  @Prop({
-    type: String,
-  })
-  cardHashPan: string;
-
-  @Prop({
-    type: String,
-  })
-  cardMaskPan: string;
-
-  @Prop({
-    type: Number,
-  })
-  date: number;
+  date: Date;
 }
 
 export type PaymentDocument = Payment & Document;

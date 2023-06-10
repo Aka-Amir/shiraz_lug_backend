@@ -1,5 +1,6 @@
 export interface IPaymentConfig {
-    apiKey: string,
-    secretKey: string,
-    redirectionLink: string
+  //   apiKey: string;
+  //   secretKey: string;
+  redirectionLink: string;
+  merchant: string;
 }

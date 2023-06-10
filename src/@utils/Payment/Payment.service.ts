@@ -7,9 +7,8 @@ import { PaymentDbService } from './PaymentDb.service';
 
 @Injectable()
 export class PaymentService {
-  private readonly BASE: string = 'https://mellipay.ir/api/v1';
-  private readonly HOST: string = 'https://event.shirazlug.ir/api';
-  private lastTransactionID = 0;
+  private readonly BASE: string = 'https://gateway.zibal.ir/v1';
+  private readonly HOST: string = 'http://127.0.0.1:3000/api'; //https://event.shirazlug.ir
 
   constructor(
     private httpService: HttpService,
@@ -22,29 +21,18 @@ export class PaymentService {
   }
 
   createTransaction(amount: number, userID: string) {
-    let transactionID = Date.now();
-    if (transactionID === this.lastTransactionID) transactionID += 1;
-    this.lastTransactionID = transactionID;
+    const transactionID = `${userID}_${Date.now()}`;
     return this.httpService
-      .post(
-        `${this.BASE}/payment/`,
-        {
-          TransactionId: transactionID,
-          Amount: amount,
-          CallBackUrl: this.HOST + '/payment',
-        },
-        {
-          headers: {
-            'M-Api-Key': this.config.apiKey,
-            'M-Sec-Key': this.config.secretKey,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
+      .post(`${this.BASE}/request/`, {
+        merchant: this.config.merchant,
+        amount: amount,
+        callbackUrl: this.HOST + '/payment',
+        orderId: transactionID,
+      })
       .pipe(
         map((item) => ({
-          url: item.data.link,
-          token: item.data.Mellipay_Tracking_Code,
+          url: `https://gateway.zibal.ir/start/${item.data.trackId}`,
+          token: item.data.trackId,
         })),
         catchError((e) => {
           throw e;
@@ -52,41 +40,28 @@ export class PaymentService {
       )
       .pipe(
         mergeMap((item) => {
+          console.log(item);
           return this.dbService
-            .create(item.token,transactionID, amount, userID)
+            .create(item.token, transactionID, amount, userID)
             .pipe(map(({ _id }) => ({ ID: _id, amount, ...item })));
         }),
       );
   }
 
-  verifyTransaction(Mellipay_Tracking_Code: string, TransactionId: number) {
-    return this.verify(Mellipay_Tracking_Code, TransactionId, 'verify');
+  verifyTransaction(trackingCode: string) {
+    return this.verify(trackingCode, 'verify');
   }
 
-  inquiryTransaction(Mellipay_Tracking_Code: string, TransactionId: number) {
-    return this.verify(Mellipay_Tracking_Code, TransactionId, 'inquiry');
+  inquiryTransaction(trackingCode: string) {
+    return this.verify(trackingCode, 'inquiry');
   }
 
-  private verify(
-    Mellipay_Tracking_Code: string,
-    TransactionId: number,
-    action: 'inquiry' | 'verify',
-  ) {
+  private verify(trackingCode: string, action: 'inquiry' | 'verify') {
     return this.httpService
-      .post(
-        `${this.BASE}/payment/${action}/`,
-        {
-          TransactionId,
-          Mellipay_Tracking_Code,
-        },
-        {
-          headers: {
-            'M-Api-Key': this.config.apiKey,
-            'M-Sec-Key': this.config.secretKey,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
+      .post(`${this.BASE}/${action}/`, {
+        merchant: this.config.merchant,
+        trackId: trackingCode,
+      })
       .pipe(
         map((item) => item.data),
         catchError((e) => {
