@@ -68,6 +68,7 @@ export class UsersController {
   Pay(@Param('id') userID: string) {
     return this.usersService.pay(userID).pipe(
       mergeMap((price) => {
+        console.log('Creating transaction')
         return this.paymentService.createTransaction(price.total, userID).pipe(
           map((item) => ({
             ...price,

@@ -16,7 +16,7 @@ import { SettlingModule } from '../settling/settling.module';
       },
     ]),
     PaymentModule.register({
-      merchant: process.env.MERCHANT || '64847993cbbc2700109c586b',
+      merchant: process.env.MERCHANT || '64832a1ccbbc2700092d7146',
       redirectionLink: 'https://event.shirazlug.ir/',
     }),
     SmsModule.register({

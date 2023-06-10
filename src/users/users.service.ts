@@ -60,12 +60,13 @@ export class UsersService {
       )
       .pipe(
         map((item) => {
-          Logger.log('Correct data until now');
+          // Logger.log('Correct data until now');
           return item;
         }),
         mergeMap(({ foodPrice, id }) =>
           this.settlingService.findByUserID(id).pipe(
             map((data) => {
+              console.log('Im here')
               const hotelPrice =
                 (data?.hotel?.perDayPrice || 0) * (data?.days || 0);
               return {
@@ -76,8 +77,8 @@ export class UsersService {
               };
             }),
             catchError((e) => {
-              console.log(e);
-              throw new Error('Cant find user in settling service');
+              console.log('errr', e);
+              throw e;
             }),
           ),
         ),

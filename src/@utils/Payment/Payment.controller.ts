@@ -98,13 +98,13 @@ export class PaymentController {
         next: (result) => {
           Logger.debug(result);
           res.redirect(
-            `${this.config.redirectionLink}?code=${query.status}?payment=true`,
+            `${this.config.redirectionLink}?code=${query.status}&payment=true`,
           );
         },
         error: (e) => {
           Logger.error(e);
           res.redirect(
-            `${this.config.redirectionLink}?code=${-1}?payment=true`,
+            `${this.config.redirectionLink}?code=${-1}&payment=true`,
           );
         },
       });

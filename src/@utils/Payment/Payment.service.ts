@@ -30,10 +30,12 @@ export class PaymentService {
         orderId: transactionID,
       })
       .pipe(
-        map((item) => ({
-          url: `https://gateway.zibal.ir/start/${item.data.trackId}`,
-          token: item.data.trackId,
-        })),
+        map((item) => {
+          return {
+            url: `https://gateway.zibal.ir/start/${item.data.trackId}`,
+            token: item.data.trackId,
+          };
+        }),
         catchError((e) => {
           throw e;
         }),
