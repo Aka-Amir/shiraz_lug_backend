@@ -8,7 +8,7 @@ import { PaymentDbService } from './PaymentDb.service';
 @Injectable()
 export class PaymentService {
   private readonly BASE: string = 'https://gateway.zibal.ir/v1';
-  private readonly HOST: string = 'http://127.0.0.1:3000/api'; //https://event.shirazlug.ir
+  private readonly HOST: string = 'https://event.shirazlug.ir/api';
 
   constructor(
     private httpService: HttpService,
