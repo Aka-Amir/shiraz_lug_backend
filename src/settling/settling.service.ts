@@ -37,7 +37,6 @@ export class SettlingService {
   }
 
   findByUserID(id: string) {
-    console.log('Finding by user id ' + id);
     return from(
       this.settlingModel
         .findOne({ user: id }, { __v: 0 })
@@ -46,7 +45,6 @@ export class SettlingService {
         .exec(),
     ).pipe(
       catchError((e) => {
-        console.log(e);
         throw e;
       }),
     );

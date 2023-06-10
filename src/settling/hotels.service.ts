@@ -27,7 +27,6 @@ export class HotelsService {
     return from(
       (async () => {
         const a = await this.hotelsModel.find({}, { __v: 0 }).exec();
-        console.log(a);
         return a;
       })(),
     );

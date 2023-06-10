@@ -32,14 +32,14 @@ export class MongooseInterceptor implements NestInterceptor {
             case 11000:
               throw new ConflictException();
             default:
-              console.log(error.code);
+              break;
           }
         }
 
         if(error instanceof AxiosError) {
           throw new HttpException(error.message, (error.status || 412));
         }
-        throw InternalServerErrorException;
+        throw new InternalServerErrorException();
       }),
     );
   }

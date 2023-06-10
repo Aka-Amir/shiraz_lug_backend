@@ -28,7 +28,6 @@ describe('UsersController (e2e) user lifecycle', () => {
       })
       .expect(201)
       .then((s) => {
-        console.log(s.body);
         expect(s.body).not.toBeFalsy();
       });
   });
@@ -38,7 +37,6 @@ describe('UsersController (e2e) user lifecycle', () => {
       .get(HOTELS_END_POINT)
       .expect(200)
       .then((s) => {
-        console.log(s.body);
         expect((s.body as Array<any>).length).toBeGreaterThan(0);
       });
   });

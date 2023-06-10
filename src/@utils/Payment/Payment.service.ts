@@ -42,7 +42,6 @@ export class PaymentService {
       )
       .pipe(
         mergeMap((item) => {
-          console.log(item);
           return this.dbService
             .create(item.token, transactionID, amount, userID)
             .pipe(map(({ _id }) => ({ ID: _id, amount, ...item })));

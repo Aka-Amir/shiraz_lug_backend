@@ -53,7 +53,6 @@ export class SettlingController {
   @Get('/hotel')
   findAllHotels() {
     return this.hotelsService.findAll().pipe((i) => {
-      console.log(i);
       return i;
     });
   }

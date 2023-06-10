@@ -30,7 +30,6 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .then((s) => {
         userID = s.body.ID;
-        console.log(s.body);
         expect(userID).not.toBeFalsy();
       });
   });

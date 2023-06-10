@@ -3,11 +3,12 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
-import { map, mergeMap } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs';
 import { SmsPatternBuilder, SmsService } from '../@utils';
 import { PaymentService } from '../@utils/Payment';
 import { RandomNumber } from '../@utils/RandomNumber';
@@ -68,7 +69,6 @@ export class UsersController {
   Pay(@Param('id') userID: string) {
     return this.usersService.pay(userID).pipe(
       mergeMap((price) => {
-        console.log('Creating transaction')
         return this.paymentService.createTransaction(price.total, userID).pipe(
           map((item) => ({
             ...price,
@@ -90,6 +90,10 @@ export class UsersController {
       map((item) => {
         delete item.verificationCode;
         return item;
+      }),
+      catchError(e => {
+        console.log(e);
+        throw new InternalServerErrorException();
       }),
     );
   }

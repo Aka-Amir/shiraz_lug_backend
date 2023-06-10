@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { catchError, from, map, mergeMap } from 'rxjs';
@@ -47,11 +47,9 @@ export class UsersService {
     )
       .pipe(
         catchError((_) => {
-          console.log('Failed');
           throw new Error('An error has been happen at finding user');
         }),
         map((v) => {
-          console.log('Mapping data');
           return {
             foodPrice: v.orderedFood.price,
             id: v?._id,
@@ -60,13 +58,11 @@ export class UsersService {
       )
       .pipe(
         map((item) => {
-          // Logger.log('Correct data until now');
           return item;
         }),
         mergeMap(({ foodPrice, id }) =>
           this.settlingService.findByUserID(id).pipe(
             map((data) => {
-              console.log('Im here')
               const hotelPrice =
                 (data?.hotel?.perDayPrice || 0) * (data?.days || 0);
               return {
@@ -77,7 +73,6 @@ export class UsersService {
               };
             }),
             catchError((e) => {
-              console.log('errr', e);
               throw e;
             }),
           ),

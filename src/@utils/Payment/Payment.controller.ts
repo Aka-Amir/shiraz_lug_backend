@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Logger, Query, Res } from '@nestjs/common';
+import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
 import { Observable, iif, map, mergeMap } from 'rxjs';
 import { SettlingService } from '../../settling/settling.service';
 import { SmsPatternBuilder, SmsService } from '../Sms';
@@ -96,13 +96,11 @@ export class PaymentController {
       )
       .subscribe({
         next: (result) => {
-          Logger.debug(result);
           res.redirect(
             `${this.config.redirectionLink}?code=${query.status}&payment=true`,
           );
         },
         error: (e) => {
-          Logger.error(e);
           res.redirect(
             `${this.config.redirectionLink}?code=${-1}&payment=true`,
           );
