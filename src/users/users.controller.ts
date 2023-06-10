@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -79,10 +78,10 @@ export class UsersController {
     );
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -122,8 +121,8 @@ export class UsersController {
     );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.usersService.remove(id);
+  // }
 }

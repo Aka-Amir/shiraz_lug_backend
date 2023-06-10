@@ -1,15 +1,6 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { map } from 'rxjs';
 import { CreateFoodDto } from './dto/create-food.dto';
-import { UpdateFoodDto } from './dto/update-food.dto';
 import { FoodsService } from './foods.service';
 
 @Controller('api/foods')
@@ -35,13 +26,13 @@ export class FoodsController {
     return this.foodsService.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
-    return this.foodsService.update(id, updateFoodDto);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
+  //   return this.foodsService.update(id, updateFoodDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.foodsService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.foodsService.remove(id);
+  // }
 }
