@@ -84,7 +84,8 @@ export class UsersController {
   Pay(@Param('id') userID: string) {
     return this.paymentService.db.getSuccessPaymentRciepts(userID).pipe(
       map(item => {
-        if(!item) return item;
+        console.log(item);
+        if(!item.length) return item;
         throw new ForbiddenException();
       }),
       mergeMap(() => {
