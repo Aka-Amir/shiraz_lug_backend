@@ -68,4 +68,30 @@ export class PaymentDbService {
         .exec(),
     );
   }
+
+  public getPaymentRciepts(userID: string) {
+    return from(
+      this.model
+        .find(
+          {
+            user: userID
+          },
+          { __v: 0 },
+        )
+        .exec(),
+    );
+  }
+
+  public getSuccessPaymentRciepts(userID: string) {
+    return from(
+      this.model
+        .find(
+          {
+            $and: [{ user: userID }, { status: 2 }],
+          },
+          { __v: 0 },
+        )
+        .exec(),
+    );
+  }
 }

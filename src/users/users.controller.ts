@@ -65,18 +65,42 @@ export class UsersController {
     );
   }
 
+  @Get('/pay_status/:id')
+  IsPaied(@Param('id') userID: string) {
+    return this.paymentService.db.getSuccessPaymentRciepts(userID).pipe(
+      map(item => {
+        if(!item.length) return { isPaied: false }
+        return { isPaied: true, recipt: item[0] };
+      })
+    )
+  }
+
+  @Get('/payment_list/:id')
+  PaymentList(@Param('id') userID: string) {
+    return this.paymentService.db.getPaymentRciepts(userID);
+  }
+
   @Get('/pay/:id')
   Pay(@Param('id') userID: string) {
-    return this.usersService.pay(userID).pipe(
-      mergeMap((price) => {
-        return this.paymentService.createTransaction(price.total, userID).pipe(
-          map((item) => ({
-            ...price,
-            ...item,
-          })),
+    return this.paymentService.db.getSuccessPaymentRciepts(userID).pipe(
+      map(item => {
+        if(!item) return item;
+        throw new ForbiddenException();
+      }),
+      mergeMap(() => {
+        return this.usersService.pay(userID).pipe(
+          mergeMap((price) => {
+            return this.paymentService.createTransaction(price.total, userID).pipe(
+              map((item) => ({
+                ...price,
+                ...item,
+              })),
+            );
+          }),
         );
       }),
-    );
+    )
+
   }
 
   // @Get()
