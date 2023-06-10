@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IPaymentConfig } from './IPaymentConfig';
 import { PAYMENT_CONFIG_PROVIDER } from './Payment.constants';
 import { catchError, map, mergeMap } from 'rxjs';
@@ -23,8 +23,15 @@ export class PaymentService {
 
   createTransaction(amount: number, userID: string) {
     let transactionID = Date.now();
+    Logger.flush()
+    console.clear()
     if (transactionID === this.lastTransactionID) transactionID += 1;
     this.lastTransactionID = transactionID;
+    this.httpService.axiosRef.interceptors.request.use((conf) => {
+      Logger.debug(conf.data, `${conf.url} BODY`);
+      Logger.debug(`\n${conf.headers}`, `${conf.url} HEADERS`);
+      return conf;
+    });
     return this.httpService
       .post(
         `${this.BASE}/payment/`,
@@ -53,7 +60,7 @@ export class PaymentService {
       .pipe(
         mergeMap((item) => {
           return this.dbService
-            .create(item.token,transactionID, amount, userID)
+            .create(item.token, transactionID, amount, userID)
             .pipe(map(({ _id }) => ({ ID: _id, amount, ...item })));
         }),
       );
