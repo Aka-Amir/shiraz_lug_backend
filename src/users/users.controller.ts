@@ -43,7 +43,7 @@ export class UsersController {
       gender: user.gender,
       phoneNumber: user.phoneNumber,
       city: user.city,
-      orderedFood: user.orderedFood.toString(),
+      orderedFood: user.orderedFood,
       needTaxi: user.needTaxi,
       presenceTime: user.presenceTime,
     };

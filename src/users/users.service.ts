@@ -32,14 +32,14 @@ export class UsersService {
     try {
       const r = await user.save();
       return {
-        _id: r._id.toString(),
+        _id: r._id,
         firstName: r.firstName,
         lastName: r.lastName,
         email: r.email,
         gender: r.gender,
         phoneNumber: r.phoneNumber,
         city: r.city,
-        orderedFood: r.orderedFood?.toString(),
+        orderedFood: r.orderedFood,
         needTaxi: r.needTaxi,
         presenceTime: r.presenceTime,
         verificationCode: r.verificationCode,
@@ -54,14 +54,14 @@ export class UsersService {
       );
       console.log(doc);
       return {
-        _id: doc._id.toString(),
+        _id: doc._id,
         firstName: doc.firstName,
         lastName: doc.lastName,
         email: doc.email,
         gender: doc.gender,
         phoneNumber: doc.phoneNumber,
         city: doc.city,
-        orderedFood: doc.orderedFood.toString(),
+        orderedFood: doc.orderedFood,
         needTaxi: doc.needTaxi,
         presenceTime: doc.presenceTime,
         verificationCode: doc.verificationCode,
