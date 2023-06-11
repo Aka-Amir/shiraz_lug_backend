@@ -1,19 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  Observable,
-  catchError,
-  from,
-  lastValueFrom,
-  map,
-  mergeMap,
-} from 'rxjs';
+import { catchError, from, lastValueFrom, map, mergeMap } from 'rxjs';
+import { RandomNumber } from 'src/@utils/RandomNumber';
 import { SettlingService } from '../settling/settling.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './entities/user.entity';
-import { RandomNumber } from 'src/@utils/RandomNumber';
 
 @Injectable()
 export class UsersService {
@@ -46,13 +39,13 @@ export class UsersService {
         gender: r.gender,
         phoneNumber: r.phoneNumber,
         city: r.city,
-        orderedFood: r.orderedFood.toString(),
+        orderedFood: r.orderedFood?.toString(),
         needTaxi: r.needTaxi,
         presenceTime: r.presenceTime,
         verificationCode: r.verificationCode,
       };
     } catch (_) {
-      console.log('ERROR user');
+      console.log('ERROR user', _);
       const doc = await lastValueFrom(
         this.findByPhoneNumberAndUpdateVerification(
           createUserDto.phoneNumber,
