@@ -10,7 +10,7 @@ import { HttpService } from '@nestjs/axios';
 @Injectable()
 export class SmsService {
   private readonly URL = 'http://ippanel.com/api/select';
-//   private readonly URL = 'http://ippanel.com/api/select';
+  //   private readonly URL = 'http://ippanel.com/api/select';
   constructor(
     @Inject('SMS_CONFIG') private readonly config: ISmsConfig,
     private readonly httpService: HttpService,
@@ -39,7 +39,7 @@ export class SmsService {
 
   private _sendPatternMessage(payload: IPatternMessagePayload) {
     if (payload.op !== 'pattern') throw new Error('Invalid operation');
-    return this.httpService.post(this.URL, payload); 
+    return this.httpService.post(this.URL, payload);
   }
 
   private _sendCommercialMessage(payload: ICommercialMessagePayload) {

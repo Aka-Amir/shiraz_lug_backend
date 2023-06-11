@@ -8,7 +8,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { Observable, catchError, map, mergeMap } from 'rxjs';
+import { catchError, from, lastValueFrom, map, mergeMap } from 'rxjs';
 import { SmsPatternBuilder, SmsService } from '../@utils';
 import { PaymentService } from '../@utils/Payment';
 import { RandomNumber } from '../@utils/RandomNumber';
@@ -26,48 +26,27 @@ export class UsersController {
   ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    const newCode = RandomNumber();
-    return this.usersService
-      .findByPhoneNumberAndUpdateVerification(
-        createUserDto.phoneNumber,
-        newCode,
-      )
-      .pipe(
-        mergeMap((result) => {
-          if (!result) return this.usersService.create(createUserDto);
-          else
-            return new Observable((s) => s.next()).pipe(
-              map(() => ({ ...result, verificationCode: newCode })),
-            );
-        }),
-      )
-      .pipe(
-        mergeMap((user) => {
-          return this.smsService
-            .sendPatternMessage(
-              new SmsPatternBuilder()
-                .setNumber(user.phoneNumber)
-                .setCode(user.verificationCode),
-            )
-            .pipe(
-              map(() => {
-                return {
-                  _id: user._id.toString(),
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  email: user.email,
-                  gender: user.gender,
-                  phoneNumber: user.phoneNumber,
-                  city: user.city,
-                  orderedFood: user.orderedFood,
-                  needTaxi: user.needTaxi,
-                  presenceTime: user.presenceTime,
-                };
-              }),
-            );
-        }),
-      );
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    await lastValueFrom(
+      this.smsService.sendPatternMessage(
+        new SmsPatternBuilder()
+          .setNumber(user.phoneNumber)
+          .setCode(user.verificationCode),
+      ),
+    );
+    return {
+      _id: user._id.toString(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      gender: user.gender,
+      phoneNumber: user.phoneNumber,
+      city: user.city,
+      orderedFood: user.orderedFood.toString(),
+      needTaxi: user.needTaxi,
+      presenceTime: user.presenceTime,
+    };
   }
 
   @Post('resend_code')

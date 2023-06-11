@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { catchError, from, map, mergeMap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  from,
+  lastValueFrom,
+  map,
+  mergeMap,
+} from 'rxjs';
 import { SettlingService } from '../settling/settling.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './entities/user.entity';
+import { RandomNumber } from 'src/@utils/RandomNumber';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +23,7 @@ export class UsersService {
     private settlingService: SettlingService,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const user = new this.model({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
@@ -27,7 +35,45 @@ export class UsersService {
       needTaxi: createUserDto.needTaxi || false,
       presenceTime: createUserDto.presenceTime || 'full',
     });
-    return from(user.save());
+
+    try {
+      const r = await user.save();
+      return {
+        _id: r._id.toString(),
+        firstName: r.firstName,
+        lastName: r.lastName,
+        email: r.email,
+        gender: r.gender,
+        phoneNumber: r.phoneNumber,
+        city: r.city,
+        orderedFood: r.orderedFood.toString(),
+        needTaxi: r.needTaxi,
+        presenceTime: r.presenceTime,
+        verificationCode: r.verificationCode,
+      };
+    } catch (_) {
+      console.log('ERROR user');
+      const doc = await lastValueFrom(
+        this.findByPhoneNumberAndUpdateVerification(
+          createUserDto.phoneNumber,
+          RandomNumber(),
+        ),
+      );
+      console.log(doc);
+      return {
+        _id: doc._id.toString(),
+        firstName: doc.firstName,
+        lastName: doc.lastName,
+        email: doc.email,
+        gender: doc.gender,
+        phoneNumber: doc.phoneNumber,
+        city: doc.city,
+        orderedFood: doc.orderedFood.toString(),
+        needTaxi: doc.needTaxi,
+        presenceTime: doc.presenceTime,
+        verificationCode: doc.verificationCode,
+      };
+    }
   }
 
   findAll() {
@@ -46,11 +92,12 @@ export class UsersService {
     phone: string,
     verificationCode: number,
   ) {
+    console.log('Finding by phone number');
     return from(
       this.model
         .findOneAndUpdate(
           { phoneNumber: phone },
-          { $set: { verificationCode: verificationCode } },
+          { verificationCode: verificationCode },
         )
         .exec(),
     );
