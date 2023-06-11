@@ -38,6 +38,24 @@ export class UsersService {
     return from(this.model.findOne({ _id: id }, { __v: 0 }).exec());
   }
 
+  findByPhoneNumber(phone: string) {
+    return from(this.model.findOne({ phoneNumber: phone }, { __v: 0 }).exec());
+  }
+
+  findByPhoneNumberAndUpdateVerification(
+    phone: string,
+    verificationCode: number,
+  ) {
+    return from(
+      this.model
+        .findOneAndUpdate(
+          { phoneNumber: phone },
+          { $set: { verificationCode: verificationCode } },
+        )
+        .exec(),
+    );
+  }
+
   pay(userID: string) {
     return from(
       this.model
@@ -46,7 +64,7 @@ export class UsersService {
         .exec(),
     )
       .pipe(
-        catchError((_) => {
+        catchError(() => {
           throw new Error('An error has been happen at finding user');
         }),
         map((v) => {

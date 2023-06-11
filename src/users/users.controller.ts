@@ -8,7 +8,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { catchError, map, mergeMap } from 'rxjs';
+import { Observable, catchError, map, mergeMap } from 'rxjs';
 import { SmsPatternBuilder, SmsService } from '../@utils';
 import { PaymentService } from '../@utils/Payment';
 import { RandomNumber } from '../@utils/RandomNumber';
@@ -27,21 +27,47 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto).pipe(
-      mergeMap((item) => {
-        return this.smsService
-          .sendPatternMessage(
-            new SmsPatternBuilder()
-              .setNumber(item.phoneNumber)
-              .setCode(item.verificationCode),
-          )
-          .pipe(
-            map(() => {
-              return { ID: item._id.toString() };
-            }),
-          );
-      }),
-    );
+    const newCode = RandomNumber();
+    return this.usersService
+      .findByPhoneNumberAndUpdateVerification(
+        createUserDto.phoneNumber,
+        newCode,
+      )
+      .pipe(
+        mergeMap((result) => {
+          if (!result) return this.usersService.create(createUserDto);
+          else
+            return new Observable((s) => s.next()).pipe(
+              map(() => ({ ...result, verificationCode: newCode })),
+            );
+        }),
+      )
+      .pipe(
+        mergeMap((user) => {
+          return this.smsService
+            .sendPatternMessage(
+              new SmsPatternBuilder()
+                .setNumber(user.phoneNumber)
+                .setCode(user.verificationCode),
+            )
+            .pipe(
+              map(() => {
+                return {
+                  _id: user._id.toString(),
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  email: user.email,
+                  gender: user.gender,
+                  phoneNumber: user.phoneNumber,
+                  city: user.city,
+                  orderedFood: user.orderedFood,
+                  needTaxi: user.needTaxi,
+                  presenceTime: user.presenceTime,
+                };
+              }),
+            );
+        }),
+      );
   }
 
   @Post('resend_code')
@@ -68,11 +94,11 @@ export class UsersController {
   @Get('/pay_status/:id')
   IsPaied(@Param('id') userID: string) {
     return this.paymentService.db.getSuccessPaymentRciepts(userID).pipe(
-      map(item => {
-        if(!item.length) return { isPaied: false }
+      map((item) => {
+        if (!item.length) return { isPaied: false };
         return { isPaied: true, recipt: item[0] };
-      })
-    )
+      }),
+    );
   }
 
   @Get('/payment_list/:id')
@@ -83,25 +109,26 @@ export class UsersController {
   @Get('/pay/:id')
   Pay(@Param('id') userID: string) {
     return this.paymentService.db.getSuccessPaymentRciepts(userID).pipe(
-      map(item => {
+      map((item) => {
         console.log(item);
-        if(!item.length) return item;
+        if (!item.length) return item;
         throw new ForbiddenException();
       }),
       mergeMap(() => {
         return this.usersService.pay(userID).pipe(
           mergeMap((price) => {
-            return this.paymentService.createTransaction(price.total, userID).pipe(
-              map((item) => ({
-                ...price,
-                ...item,
-              })),
-            );
+            return this.paymentService
+              .createTransaction(price.total, userID)
+              .pipe(
+                map((item) => ({
+                  ...price,
+                  ...item,
+                })),
+              );
           }),
         );
       }),
-    )
-
+    );
   }
 
   // @Get()
@@ -116,7 +143,7 @@ export class UsersController {
         delete item.verificationCode;
         return item;
       }),
-      catchError(e => {
+      catchError((e) => {
         console.log(e);
         throw new InternalServerErrorException();
       }),

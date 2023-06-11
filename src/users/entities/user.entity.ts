@@ -74,7 +74,7 @@ export class User {
       const date = new Date();
       date.setMinutes(date.getMinutes() + 2);
       return date;
-    }
+    },
   })
   lastCodeSentDate: Date;
 }
